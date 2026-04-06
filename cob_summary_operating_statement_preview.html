@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Columbia University – COB Summary Operating Statement (Training)</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #111;
+    background: #e8e8e8;
+    display: flex;
+    min-height: 100vh;
+  }
+  #report-panel {
+    flex: 1 1 auto;
+    background: #fff;
+    overflow-x: auto;
+    min-width: 0;
+  }
+  .nav-bar {
+    background: #fff;
+    border-bottom: 1px solid #ccc;
+    padding: 3px 10px 0px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .nav-bar a {
+    color: #00419e;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: bold;
+    white-space: nowrap;
+  }
+  .nav-bar a:hover { text-decoration: underline; }
+  .header-block {
+    display: flex;
+    align-items: flex-start;
+    padding: 5px 12px 2px;
+  }
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 185px;
+    flex-shrink: 0;
+  }
+  .logo-crown { font-size: 20px; color: #003087; }
+  .logo-text .cu-name {
+    font-size: 11.5px; font-weight: bold; color: #003087;
+    text-transform: uppercase; letter-spacing: 0.4px; line-height: 1.2;
+  }
+  .logo-text .cu-sub {
+    font-size: 7.5px; color: #003087;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .report-titles {
+    flex: 1; text-align: center; padding-top: 1px; line-height: 1.5;
+  }
+  .report-titles .title-main { font-size: 12px; font-weight: bold; }
+  .report-titles .title-sub  { font-size: 11px; font-weight: bold; }
+  .report-titles .title-date { font-size: 11px; }
+  .run-info {
+    text-align: right; font-size: 10px; color: #333; white-space: nowrap; padding-top: 2px;
+  }
+  .meta-section {
+    padding: 3px 12px 3px;
+    display: flex;
+    gap: 20px;
+    font-size: 10px;
+    border-bottom: 1px solid #888;
+    flex-wrap: wrap;
+  }
+  .meta-col { display: flex; flex-direction: column; gap: 1px; }
+  .meta-row { display: flex; gap: 3px; }
+  .meta-label { font-weight: bold; white-space: nowrap; }
+  .clickable {
+    cursor: pointer; border-radius: 2px;
+    transition: background 0.12s, outline 0.12s;
+    padding: 0 2px;
+  }
+  .clickable:hover  { background: #fff3cd; outline: 1px solid #e6a817; }
+  .clickable.active { background: #d0e8ff; outline: 1px solid #0056b3; }
+  .table-wrapper { padding: 3px 6px 8px; overflow-x: auto; }
+  table.report-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 8.5px; table-layout: fixed;
+    min-width: 1400px;
+  }
+  col.c-desc   { width: 175px; }
+  col.c-num    { width: 62px; }
+  col.c-num-sm { width: 54px; }
+  col.c-pct    { width: 46px; }
+  .report-table thead tr.hdr-cols th {
+    text-align: right; font-weight: bold; font-size: 8.5px;
+    padding: 2px 3px;
+    border-top: 1px solid #888;
+    border-bottom: 1px solid #888;
+    vertical-align: bottom; line-height: 1.2; white-space: normal;
+    background: #fff;
+  }
+  .report-table thead tr.hdr-cols th.left { text-align: left; }
+  .report-table tbody td {
+    padding: 1px 3px; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; vertical-align: top;
+  }
+  .report-table tbody td.r    { text-align: right; }
+  .report-table tbody td.blue { text-align: right; color: #00419e; }
+  .report-table tbody td.neg  { text-align: right; color: #cc0000; }
+  .report-table tbody td.pos  { text-align: right; color: #006600; }
+  .report-table tbody td.grey { text-align: right; color: #555; }
+  .report-table tbody tr:hover td { background: #f6f6f6; }
+  tr.section-header td {
+    font-weight: bold; font-size: 8.5px;
+    background: #f0f0f0;
+    border-top: 1px solid #bbb;
+    padding: 2px 3px;
+  }
+  tr.subsection-header td {
+    font-weight: bold; font-size: 8px;
+    padding: 1px 3px 1px 10px;
+  }
+  tr.indent1 td:first-child { padding-left: 12px; }
+  tr.indent2 td:first-child { padding-left: 20px; }
+  tr.indent3 td:first-child { padding-left: 28px; }
+  tr.total-row td {
+    font-weight: bold;
+    border-top: 1px solid #444;
+    border-bottom: 1px solid #444;
+    padding-top: 2px; padding-bottom: 2px;
+  }
+  tr.grand-total td {
+    font-weight: bold;
+    border-top: 2px double #111 !important;
+    border-bottom: 2px solid #111;
+    padding-top: 2px; padding-bottom: 2px;
+  }
+  tr.spacer td { height: 5px; border: none !important; font-weight: normal !important; }
+  #explain-panel {
+    width: 0; min-width: 0; overflow: hidden;
+    background: #fafafa; border-left: 3px solid #003087;
+    transition: width 0.28s ease, min-width 0.28s ease;
+    display: flex; flex-direction: column; flex-shrink: 0;
+  }
+  #explain-panel.open { width: 310px; min-width: 280px; }
+  .panel-header {
+    background: #003087; color: #fff; padding: 6px 10px;
+    font-size: 11px; font-weight: bold;
+    display: flex; justify-content: space-between; align-items: center;
+    min-width: 280px; flex-shrink: 0;
+  }
+  .panel-header button {
+    background: none; border: none; color: #fff; cursor: pointer; font-size: 14px;
+  }
+  .panel-header button:hover { opacity: 0.7; }
+  #explain-inner { padding: 11px; overflow-y: auto; flex: 1; min-width: 280px; }
+  .explain-field-name {
+    font-size: 13px; font-weight: bold; color: #003087;
+    margin-bottom: 7px; border-bottom: 1px solid #ccd; padding-bottom: 4px;
+  }
+  .explain-section { margin-bottom: 9px; }
+  .tip-badge {
+    display: inline-block; background: #003087; color: #fff;
+    font-size: 8.5px; font-weight: bold; padding: 1px 5px;
+    border-radius: 2px; margin-bottom: 3px; letter-spacing: 0.3px;
+  }
+  .explain-section-body { font-size: 11px; color: #222; line-height: 1.55; }
+  .footnotes { padding: 2px 12px 10px; font-size: 9px; color: #333; font-style: italic; line-height: 1.6; }
+  .training-badge {
+    position: fixed; bottom: 10px; left: 10px;
+    background: #003087; color: #fff; font-size: 9.5px;
+    padding: 3px 9px; border-radius: 10px; z-index: 999;
+  }
+  @keyframes hint-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(0,48,135,0.5); }
+    70%  { box-shadow: 0 0 0 6px rgba(0,48,135,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,48,135,0); }
+  }
+  .first-hint { animation: hint-pulse 1.4s ease 0.9s 2; border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="report-panel">
+  <div class="nav-bar">
+    <a href="#">Financial Data Store</a>
+    <a href="#">[Trial Balance]</a>
+    <a href="#">[Detail by Department]</a>
+    <a href="#">[Personnel Detail]</a>
+    <a href="#">[Other Expense Detail]</a>
+  </div>
+
+  <div class="header-block">
+    <div class="logo-area">
+      <div class="logo-crown">♛</div>
+      <div class="logo-text">
+        <div class="cu-name">Columbia University</div>
+        <div class="cu-sub">In the City of New York</div>
+      </div>
+    </div>
+    <div class="report-titles">
+      <div class="title-main">Columbia University</div>
+      <div class="title-sub">COB – Summary Operating Statement</div>
+      <div class="title-date">As of 03/31/26</div>
+    </div>
+    <div class="run-info">
+      <div><strong>Run Date:</strong> 4/3/2026</div>
+      <div><strong>Run Time:</strong> 3:49:50PM</div>
+      <div><strong>Report ID:</strong> RPT1055</div>
+    </div>
+  </div>
+
+  <div class="meta-section">
+    <div class="meta-col">
+      <div class="meta-row"><span class="meta-label">Business Units:</span><span>&nbsp;L1 - Columbia U Consolidated</span></div>
+      <div class="meta-row"><span class="meta-label">Actuals:</span><span>&nbsp;FY2026, Period 09-March</span></div>
+      <div class="meta-row"><span class="meta-label">Budgets Version:</span><span>&nbsp;Current Estimate at Q3</span></div>
+    </div>
+    <div class="meta-col">
+      <div class="meta-row"><span class="meta-label">Department/Dept Rollup:</span><span>&nbsp;ALL</span></div>
+      <div class="meta-row"><span class="meta-label">Central / Non-Central:</span><span>&nbsp;ALL</span></div>
+      <div class="meta-row"><span class="meta-label">Projects:</span><span>&nbsp;ALL</span></div>
+    </div>
+    <div class="meta-col">
+      <div class="meta-row"><span class="meta-label">Include MOT:</span><span>&nbsp;Yes</span></div>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+  <table class="report-table">
+    <colgroup>
+      <col class="c-desc">
+      <col class="c-num"><col class="c-num">
+      <col class="c-num"><col class="c-num"><col class="c-num">
+      <col class="c-num"><col class="c-num"><col class="c-num">
+      <col class="c-num-sm"><col class="c-num-sm"><col class="c-num-sm"><col class="c-num-sm"><col class="c-num-sm"><col class="c-num-sm"><col class="c-num-sm">
+      <col class="c-pct"><col class="c-pct"><col class="c-pct"><col class="c-pct"><col class="c-pct"><col class="c-pct"><col class="c-pct">
+    </colgroup>
+    <thead>
+      <tr class="hdr-cols">
+        <th class="left">Budget Report Line (in $000s)</th>
+        <th class="right clickable first-hint" data-key="mar_fy25_ytd">March FY25 YTD Actual</th>
+        <th class="right clickable" data-key="mar_fy26_ytd">March FY26 YTD Actual</th>
+        <th class="right clickable" data-key="fy25_actual">FY25 Actual</th>
+        <th class="right clickable" data-key="fy26_orig">FY26 Original</th>
+        <th class="right clickable" data-key="fy26_ce">FY26 Current Estimate</th>
+        <th class="right clickable" data-key="fy27_fc">FY27 Forecast</th>
+        <th class="right clickable" data-key="fy28_fc">FY28 Forecast</th>
+        <th class="right clickable" data-key="fy29_fc">FY29 Forecast</th>
+        <th class="right clickable" data-key="var_ytd_dol">FY26 YTD vs FY25 YTD $</th>
+        <th class="right clickable" data-key="var_orig_fy25_dol">FY26 Orig Bud vs FY25 Actual $</th>
+        <th class="right clickable" data-key="var_ce_fy25_dol">FY26 Cur Est vs FY25 Actual $</th>
+        <th class="right clickable" data-key="var_ce_orig_dol">FY26 Cur Est vs FY26 Orig Bud $</th>
+        <th class="right clickable" data-key="var_fy27_ce_dol">FY27 Forecast vs FY26 Cur Est $</th>
+        <th class="right clickable" data-key="var_fy28_fy27_dol">FY28 Forecast vs FY27 Forecast $</th>
+        <th class="right clickable" data-key="var_fy29_fy28_dol">FY29 Forecast vs FY28 Forecast $</th>
+        <th class="right clickable" data-key="pct_ytd">FY26 YTD vs FY25 YTD %</th>
+        <th class="right clickable" data-key="pct_orig_fy25">FY26 Orig Bud vs FY25 Actual %</th>
+        <th class="right clickable" data-key="pct_ce_fy25">FY26 Cur Est vs FY25 Actual %</th>
+        <th class="right clickable" data-key="pct_ce_orig">FY26 Cur Est vs FY26 Orig Bud %</th>
+        <th class="right clickable" data-key="pct_fy27_ce">FY27 Forecast vs FY26 Cur Est %</th>
+        <th class="right clickable" data-key="pct_fy28_fy27">FY28 Forecast vs FY27 Forecast %</th>
+        <th class="right clickable" data-key="pct_fy29_fy28">FY29 Forecast vs FY28 Forecast %</th>
+      </tr>
+    </thead>
+    <tbody>
+
+<tr class="section-header">
+  <td colspan="23">I. Direct Revenues and Support</td>
+</tr>
+<tr class="subsection-header">
+  <td colspan="23">A. Tuition and fees</td>
+</tr>
+<tr class="indent2">
+  <td class="clickable" data-key="line_tuition_fees">1. Tuition and fees</td>
+  <td class="blue">248,410</td><td class="blue">317,882</td>
+  <td class="r">304,750</td><td class="r">322,100</td><td class="r">336,540</td>
+  <td class="r">349,200</td><td class="r">362,780</td><td class="r">378,140</td>
+  <td class="pos">69,472</td><td class="pos">17,350</td><td class="pos">31,790</td><td class="pos">14,440</td><td class="pos">12,660</td><td class="pos">13,580</td><td class="pos">15,360</td>
+  <td class="r">27.96%</td><td class="r">5.69%</td><td class="r">10.43%</td><td class="r">4.48%</td><td class="r">3.76%</td><td class="r">3.88%</td><td class="r">4.22%</td>
+</tr>
+<tr class="indent2">
+  <td class="clickable" data-key="line_financial_aid">2. Less financial aid grants</td>
+  <td class="blue">(82,310)</td><td class="blue">(104,560)</td>
+  <td class="r">(98,440)</td><td class="r">(112,880)</td><td class="r">(107,630)</td>
+  <td class="r">(114,910)</td><td class="r">(118,240)</td><td class="r">(122,650)</td>
+  <td class="neg">(22,250)</td><td class="neg">(14,440)</td><td class="neg">(9,190)</td><td class="pos">5,250</td><td class="neg">(7,280)</td><td class="neg">(3,330)</td><td class="neg">(4,410)</td>
+  <td class="r">27.03%</td><td class="r">14.68%</td><td class="r">9.34%</td><td class="neg">-4.65%</td><td class="neg">-6.38%</td><td class="neg">-2.90%</td><td class="neg">-3.73%</td>
+</tr>
+<tr class="indent2 total-row">
+  <td>Net Tuition &amp; Fees</td>
+  <td class="r">166,100</td><td class="r">213,322</td>
+  <td class="r">206,310</td><td class="r">209,220</td><td class="r">228,910</td>
+  <td class="r">234,290</td><td class="r">244,540</td><td class="r">255,490</td>
+  <td class="pos">47,222</td><td class="pos">2,910</td><td class="pos">22,600</td><td class="pos">19,690</td><td class="pos">5,380</td><td class="pos">10,250</td><td class="pos">10,950</td>
+  <td class="r">28.43%</td><td class="r">1.41%</td><td class="r">10.95%</td><td class="r">9.41%</td><td class="r">2.35%</td><td class="r">4.38%</td><td class="r">4.48%</td>
+</tr>
+<tr class="spacer"><td colspan="23"></td></tr>
+
+<tr class="subsection-header">
+  <td colspan="23">B. Government grants and contracts</td>
+</tr>
+<tr class="indent2">
+  <td class="clickable" data-key="line_gov_direct">1. Direct</td>
+  <td class="blue">68,540</td><td class="blue">57,390</td>
+  <td class="r">89,110</td><td class="r">74,820</td><td class="r">81,650</td>
+  <td class="r">76,200</td><td class="r">79,440</td><td class="r">82,620</td>
+  <td class="neg">(11,150)</td><td class="neg">(14,290)</td><td class="neg">(7,460)</td><td class="pos">6,830</td><td class="neg">(5,450)</td><td class="pos">3,240</td><td class="pos">3,180</td>
+  <td class="neg">-16.27%</td><td class="neg">-16.04%</td><td class="neg">-8.37%</td><td class="r">9.13%</td><td class="neg">-6.67%</td><td class="r">4.25%</td><td class="r">4.00%</td>
+</tr>
+<tr class="indent2">
+  <td class="clickable" data-key="line_gov_indirect">2. Indirect</td>
+  <td class="blue">22,180</td><td class="blue">18,340</td>
+  <td class="r">31,420</td><td class="r">26,580</td><td class="r">28,110</td>
+  <td class="r">27,640</td><td class="r">28,890</td><td class="r">30,100</td>
+  <td class="neg">(3,840)</td><td class="neg">(4,840)</td><td class="neg">(3,310)</td><td class="pos">1,530</td><td class="neg">(470)</td><td class="pos">1,250</td><td class="pos">1,210</td>
+  <td class="neg">-17.31%</td><td class="neg">-15.40%</td><td class="neg">-10.53%</td><td class="r">5.75%</td><td class="neg">-1.67%</td><td class="r">4.52%</td><td class="r">4.19%</td>
+</tr>
+<tr class="spacer"><td colspan="23"></td></tr>
+
+<tr class="subsection-header">
+  <td colspan="23">C. Private gifts, grants, and contracts</td>
+</tr>
+<tr class="indent2">
+  <td class="clickable" data-key="line_private_gifts">1. Gifts</td>
+  <td class="blue">7,620</td><td class="blue">9,870</td>
+  <td class="r">14,380</td><td class="r">11,940</td><td class="r">13,760</td>
+  <td class="r">14,890</td><td class="r">15,540</td><td class="r">16,210</td>
+  <td class="pos">2,250</td><td class="neg">(2,440)</td><td class="neg">(620)</td><td class="pos">1,820</td><td class="pos">1,130</td><td class="pos">650</td><td class="pos">670</td>
+  <td class="r">29.53%</td><td class="neg">-16.97%</td><td class="neg">-4.31%</td><td class="r">15.24%</td><td class="r">8.21%</td><td class="r">4.37%</td><td class="r">4.31%</td>
+</tr>
+<tr class="indent2">
+  <td>2a. Private grants – Direct</td>
+  <td class="blue">9,840</td><td class="blue">10,660</td>
+  <td class="r">13,120</td><td class="r">11,480</td><td class="r">14,390</td>
+  <td class="r">13,210</td><td class="r">13,780</td><td class="r">14,350</td>
+  <td class="pos">820</td><td class="neg">(1,640)</td><td class="pos">1,270</td><td class="pos">2,910</td><td class="neg">(1,180)</td><td class="pos">570</td><td class="pos">570</td>
+  <td class="r">8.33%</td><td class="neg">-12.50%</td><td class="r">9.68%</td><td class="r">25.35%</td><td class="neg">-8.20%</td><td class="r">4.31%</td><td class="r">4.14%</td>
+</tr>
+<tr class="indent2">
+  <td>2b. Private grants – Indirect</td>
+  <td class="blue">1,540</td><td class="blue">1,690</td>
+  <td class="r">2,080</td><td class="r">1,810</td><td class="r">2,240</td>
+  <td class="r">1,970</td><td class="r">2,060</td><td class="r">2,150</td>
+  <td class="pos">150</td><td class="neg">(270)</td><td class="pos">160</td><td class="pos">430</td><td class="neg">(270)</td><td class="pos">90</td><td class="pos">90</td>
+  <td class="r">9.74%</td><td class="neg">-12.98%</td><td class="r">7.69%</td><td class="r">23.76%</td><td class="neg">-12.05%</td><td class="r">4.57%</td><td class="r">4.37%</td>
+</tr>
+<tr class="spacer"><td colspan="23"></td></tr>
+
+<tr class="subsection-header">
+  <td colspan="23">D. Other educational and research activities</td>
+</tr>
+<tr class="indent2">
+  <td>1. Patent and license</td>
+  <td class="blue">184</td><td class="blue">211</td>
+  <td class="r">430</td><td class="r">510</td><td class="r">475</td>
+  <td class="r">740</td><td class="r">0</td><td class="r">0</td>
+  <td class="pos">27</td><td class="pos">80</td><td class="pos">45</td><td class="neg">(35)</td><td class="pos">265</td><td class="neg">(740)</td><td class="r">0</td>
+  <td class="r">14.67%</td><td class="r">18.60%</td><td class="r">10.47%</td><td class="neg">-6.86%</td><td class="r">55.79%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="indent2">
+  <td>2. Other</td>
+  <td class="blue">3,920</td><td class="blue">4,105</td>
+  <td class="r">5,640</td><td class="r">6,310</td><td class="r">5,480</td>
+  <td class="r">1,890</td><td class="r">0</td><td class="r">0</td>
+  <td class="pos">185</td><td class="pos">670</td><td class="neg">(160)</td><td class="neg">(830)</td><td class="neg">(3,590)</td><td class="neg">(1,890)</td><td class="r">0</td>
+  <td class="r">4.72%</td><td class="r">11.88%</td><td class="neg">-2.84%</td><td class="neg">-13.15%</td><td class="neg">-65.51%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="spacer"><td colspan="23"></td></tr>
+
+<tr class="indent1">
+  <td>F. Investment income and gains utilized</td>
+  <td class="blue">28,640</td><td class="blue">33,910</td>
+  <td class="r">40,220</td><td class="r">45,800</td><td class="r">46,540</td>
+  <td class="r">44,280</td><td class="r">0</td><td class="r">0</td>
+  <td class="pos">5,270</td><td class="pos">5,580</td><td class="pos">6,320</td><td class="pos">740</td><td class="neg">(2,260)</td><td class="neg">(44,280)</td><td class="r">0</td>
+  <td class="r">18.40%</td><td class="r">13.87%</td><td class="r">15.71%</td><td class="r">1.62%</td><td class="neg">-4.85%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="spacer"><td colspan="23"></td></tr>
+
+<tr class="total-row">
+  <td>Total Direct Revenues &amp; Support</td>
+  <td class="r">302,568</td><td class="r">349,498</td>
+  <td class="r">396,750</td><td class="r">378,470</td><td class="r">421,545</td>
+  <td class="r">414,110</td><td class="r">384,050</td><td class="r">401,060</td>
+  <td class="pos">46,930</td><td class="neg">(18,280)</td><td class="pos">24,795</td><td class="pos">43,075</td><td class="neg">(7,435)</td><td class="neg">(30,060)</td><td class="pos">17,010</td>
+  <td class="r">15.51%</td><td class="neg">-4.61%</td><td class="r">6.25%</td><td class="r">11.38%</td><td class="neg">-1.76%</td><td class="neg">-7.26%</td><td class="r">4.43%</td>
+</tr>
+<tr class="indent1">
+  <td>II. Indirect Sources</td>
+  <td class="blue">5,810</td><td class="blue">4,220</td>
+  <td class="r">23,540</td><td class="r">15,880</td><td class="r">22,710</td>
+  <td class="r">12,390</td><td class="r">1,180</td><td class="r">0</td>
+  <td class="neg">(1,590)</td><td class="neg">(7,660)</td><td class="neg">(830)</td><td class="pos">6,830</td><td class="neg">(10,320)</td><td class="neg">(11,210)</td><td class="neg">(1,180)</td>
+  <td class="neg">-27.37%</td><td class="neg">-32.54%</td><td class="neg">-3.53%</td><td class="r">43.07%</td><td class="neg">-45.44%</td><td class="neg">-90.50%</td><td class="neg">-100.00%</td>
+</tr>
+<tr class="grand-total">
+  <td>GRAND TOTAL SOURCES</td>
+  <td class="r">308,378</td><td class="r">353,718</td>
+  <td class="r">420,290</td><td class="r">394,350</td><td class="r">444,255</td>
+  <td class="r">426,500</td><td class="r">385,230</td><td class="r">401,060</td>
+  <td class="pos">45,340</td><td class="neg">(25,940)</td><td class="pos">23,965</td><td class="pos">49,905</td><td class="neg">(17,755)</td><td class="neg">(41,270)</td><td class="pos">15,830</td>
+  <td class="r">14.70%</td><td class="neg">-6.17%</td><td class="r">5.70%</td><td class="r">12.66%</td><td class="neg">-4.00%</td><td class="neg">-9.56%</td><td class="r">4.11%</td>
+</tr>
+<tr class="spacer"><td colspan="23"></td></tr>
+
+<tr class="section-header">
+  <td colspan="23">III. Direct Expenses</td>
+</tr>
+<tr class="subsection-header">
+  <td colspan="23">A. Instruction, research, and educational administration</td>
+</tr>
+<tr class="indent3">
+  <td class="clickable" data-key="line_instruction_support">a. Instruction and faculty support</td>
+  <td class="blue">83,470</td><td class="blue">87,240</td>
+  <td class="r">111,360</td><td class="r">119,870</td><td class="r">118,430</td>
+  <td class="r">121,650</td><td class="r">0</td><td class="r">0</td>
+  <td class="neg">(3,770)</td><td class="neg">(8,510)</td><td class="neg">(7,070)</td><td class="pos">1,440</td><td class="pos">3,220</td><td class="neg">(121,650)</td><td class="r">0</td>
+  <td class="r">4.52%</td><td class="r">7.64%</td><td class="r">6.35%</td><td class="neg">-1.20%</td><td class="r">2.72%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="indent3">
+  <td>b. Student services</td>
+  <td class="blue">10,840</td><td class="blue">11,190</td>
+  <td class="r">16,450</td><td class="r">16,080</td><td class="r">16,220</td>
+  <td class="r">16,590</td><td class="r">0</td><td class="r">0</td>
+  <td class="neg">(350)</td><td class="pos">370</td><td class="pos">230</td><td class="neg">(140)</td><td class="pos">370</td><td class="neg">(16,590)</td><td class="r">0</td>
+  <td class="r">3.23%</td><td class="neg">-2.25%</td><td class="neg">-1.40%</td><td class="r">0.87%</td><td class="r">2.28%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="indent3">
+  <td>c. External affairs and fundraising</td>
+  <td class="blue">4,510</td><td class="blue">4,280</td>
+  <td class="r">6,190</td><td class="r">7,120</td><td class="r">6,870</td>
+  <td class="r">7,640</td><td class="r">0</td><td class="r">0</td>
+  <td class="pos">230</td><td class="neg">(930)</td><td class="neg">(680)</td><td class="pos">250</td><td class="neg">(770)</td><td class="neg">(7,640)</td><td class="r">0</td>
+  <td class="neg">-5.10%</td><td class="r">15.02%</td><td class="r">10.98%</td><td class="neg">-3.51%</td><td class="r">11.21%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="indent3">
+  <td>d. General and financial administration</td>
+  <td class="blue">5,980</td><td class="blue">6,890</td>
+  <td class="r">8,530</td><td class="r">9,760</td><td class="r">10,380</td>
+  <td class="r">11,470</td><td class="r">0</td><td class="r">0</td>
+  <td class="neg">(910)</td><td class="neg">(1,230)</td><td class="neg">(1,850)</td><td class="neg">(620)</td><td class="neg">(1,090)</td><td class="neg">(11,470)</td><td class="r">0</td>
+  <td class="r">15.22%</td><td class="r">14.42%</td><td class="r">21.69%</td><td class="r">6.35%</td><td class="r">10.50%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="indent3">
+  <td>g. Other – Instruction &amp; Educ Adm</td>
+  <td class="blue">8,650</td><td class="blue">11,470</td>
+  <td class="r">12,880</td><td class="r">15,010</td><td class="r">17,240</td>
+  <td class="r">14,830</td><td class="r">0</td><td class="r">0</td>
+  <td class="neg">(2,820)</td><td class="neg">(2,130)</td><td class="neg">(4,360)</td><td class="neg">(2,230)</td><td class="pos">2,410</td><td class="neg">(14,830)</td><td class="r">0</td>
+  <td class="r">32.60%</td><td class="r">16.53%</td><td class="r">33.85%</td><td class="r">14.86%</td><td class="neg">-13.98%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="indent2 total-row">
+  <td>Subtotal III.A.1</td>
+  <td class="r">113,450</td><td class="r">121,070</td>
+  <td class="r">155,410</td><td class="r">167,840</td><td class="r">169,140</td>
+  <td class="r">172,180</td><td class="r">0</td><td class="r">0</td>
+  <td class="neg">(7,620)</td><td class="neg">(12,430)</td><td class="neg">(13,730)</td><td class="neg">(1,300)</td><td class="pos">3,040</td><td class="neg">(172,180)</td><td class="r">0</td>
+  <td class="r">6.71%</td><td class="r">8.00%</td><td class="r">8.84%</td><td class="r">0.77%</td><td class="r">1.80%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="indent2">
+  <td>2. Research</td>
+  <td class="blue">74,820</td><td class="blue">65,410</td>
+  <td class="r">98,360</td><td class="r">81,490</td><td class="r">92,140</td>
+  <td class="r">79,650</td><td class="r">0</td><td class="r">0</td>
+  <td class="pos">9,410</td><td class="pos">16,870</td><td class="pos">6,220</td><td class="neg">(10,650)</td><td class="pos">12,490</td><td class="neg">(79,650)</td><td class="r">0</td>
+  <td class="neg">-12.59%</td><td class="neg">-17.14%</td><td class="neg">-6.33%</td><td class="r">13.07%</td><td class="neg">-13.56%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="spacer"><td colspan="23"></td></tr>
+
+<tr class="indent1">
+  <td class="clickable" data-key="line_plant_ops">C. Operation and maintenance of plant</td>
+  <td class="blue">218</td><td class="blue">490</td>
+  <td class="r">285</td><td class="r">1,370</td><td class="r">1,410</td>
+  <td class="r">2,540</td><td class="r">0</td><td class="r">0</td>
+  <td class="neg">(272)</td><td class="neg">(1,085)</td><td class="neg">(1,125)</td><td class="neg">(40)</td><td class="neg">(1,130)</td><td class="neg">(2,540)</td><td class="r">0</td>
+  <td class="r">124.77%</td><td class="r">380.70%</td><td class="r">394.74%</td><td class="r">2.92%</td><td class="r">80.14%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="indent1">
+  <td class="clickable" data-key="line_debt_service">F. Debt Service</td>
+  <td class="blue">720</td><td class="blue">695</td>
+  <td class="r">970</td><td class="r">950</td><td class="r">950</td>
+  <td class="r">950</td><td class="r">0</td><td class="r">0</td>
+  <td class="pos">25</td><td class="pos">20</td><td class="pos">20</td><td class="r">0</td><td class="r">0</td><td class="neg">(950)</td><td class="r">0</td>
+  <td class="neg">-3.47%</td><td class="neg">-2.06%</td><td class="neg">-2.06%</td><td class="r">0.00%</td><td class="r">0.00%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="indent1">
+  <td>G. Major Equipment</td>
+  <td class="blue">3,720</td><td class="blue">3,580</td>
+  <td class="r">5,840</td><td class="r">7,290</td><td class="r">7,350</td>
+  <td class="r">5,820</td><td class="r">0</td><td class="r">0</td>
+  <td class="pos">140</td><td class="neg">(1,450)</td><td class="neg">(1,510)</td><td class="neg">(60)</td><td class="pos">1,530</td><td class="neg">(5,820)</td><td class="r">0</td>
+  <td class="neg">-3.76%</td><td class="r">24.83%</td><td class="r">25.86%</td><td class="r">0.82%</td><td class="neg">-20.82%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="spacer"><td colspan="23"></td></tr>
+
+<tr class="total-row">
+  <td>Total Direct Expenses</td>
+  <td class="r">192,928</td><td class="r">191,245</td>
+  <td class="r">260,865</td><td class="r">258,940</td><td class="r">270,990</td>
+  <td class="r">261,140</td><td class="r">0</td><td class="r">0</td>
+  <td class="pos">1,683</td><td class="pos">1,925</td><td class="neg">(10,125)</td><td class="neg">(12,050)</td><td class="pos">9,850</td><td class="neg">(261,140)</td><td class="r">0</td>
+  <td class="neg">-0.87%</td><td class="neg">-0.74%</td><td class="r">3.88%</td><td class="r">4.65%</td><td class="neg">-3.77%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="indent1">
+  <td>IV. Indirect Uses</td>
+  <td class="blue">74,610</td><td class="blue">78,340</td>
+  <td class="r">111,480</td><td class="r">117,320</td><td class="r">116,050</td>
+  <td class="r">119,420</td><td class="r">0</td><td class="r">0</td>
+  <td class="neg">(3,730)</td><td class="neg">(5,840)</td><td class="neg">(4,570)</td><td class="pos">1,270</td><td class="neg">(3,370)</td><td class="neg">(119,420)</td><td class="r">0</td>
+  <td class="r">5.00%</td><td class="r">5.24%</td><td class="r">4.10%</td><td class="neg">-1.08%</td><td class="r">2.90%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="grand-total">
+  <td>GRAND TOTAL USES</td>
+  <td class="r">267,538</td><td class="r">269,585</td>
+  <td class="r">372,345</td><td class="r">376,260</td><td class="r">387,040</td>
+  <td class="r">380,560</td><td class="r">0</td><td class="r">0</td>
+  <td class="neg">(2,047)</td><td class="neg">(3,915)</td><td class="neg">(14,695)</td><td class="neg">(10,780)</td><td class="pos">6,480</td><td class="neg">(380,560)</td><td class="r">0</td>
+  <td class="r">0.77%</td><td class="r">1.05%</td><td class="r">3.95%</td><td class="r">2.87%</td><td class="neg">-1.67%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="spacer"><td colspan="23"></td></tr>
+
+<tr class="section-header grand-total">
+  <td>Change in current funds from operating activities</td>
+  <td class="r">40,840</td><td class="r">84,133</td>
+  <td class="r">47,945</td><td class="r">18,090</td><td class="r">57,215</td>
+  <td class="r">45,940</td><td class="r">385,230</td><td class="r">401,060</td>
+  <td class="pos">43,293</td><td class="neg">(29,855)</td><td class="pos">9,270</td><td class="pos">39,125</td><td class="neg">(11,275)</td><td class="pos">339,290</td><td class="pos">15,830</td>
+  <td class="r">106.01%</td><td class="neg">-62.28%</td><td class="r">19.34%</td><td class="r">216.28%</td><td class="neg">-19.70%</td><td class="grey">1,000%+</td><td class="r">4.11%</td>
+</tr>
+<tr class="spacer"><td colspan="23"></td></tr>
+
+<tr class="section-header">
+  <td colspan="23">V. Transfers FROM/(TO) non-operating funds</td>
+</tr>
+<tr class="indent1">
+  <td>A. Capital Projects</td>
+  <td class="blue">(6,420)</td><td class="blue">(27,880)</td>
+  <td class="r">(19,650)</td><td class="r">(16,140)</td><td class="r">(48,920)</td>
+  <td class="r">(5,870)</td><td class="r">0</td><td class="r">0</td>
+  <td class="neg">(21,460)</td><td class="pos">3,510</td><td class="neg">(29,270)</td><td class="neg">(32,780)</td><td class="pos">43,050</td><td class="pos">5,870</td><td class="r">0</td>
+  <td class="r">334.27%</td><td class="neg">-17.87%</td><td class="r">148.96%</td><td class="r">203.16%</td><td class="neg">-88.00%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="indent1">
+  <td>B. Endowment corpus</td>
+  <td class="blue">(2,310)</td><td class="blue">(2,180)</td>
+  <td class="r">(3,120)</td><td class="r">(2,490)</td><td class="r">(3,380)</td>
+  <td class="r">0</td><td class="r">0</td><td class="r">0</td>
+  <td class="pos">130</td><td class="pos">630</td><td class="neg">(260)</td><td class="neg">(890)</td><td class="pos">3,380</td><td class="r">0</td><td class="r">0</td>
+  <td class="neg">-5.63%</td><td class="neg">-20.19%</td><td class="r">8.33%</td><td class="r">35.74%</td><td class="neg">-100.00%</td><td class="grey">NM</td><td class="grey">NM</td>
+</tr>
+<tr class="total-row">
+  <td>Total transfers from/(to) non-operating funds</td>
+  <td class="r">(8,730)</td><td class="r">(30,060)</td>
+  <td class="r">(22,770)</td><td class="r">(18,630)</td><td class="r">(52,300)</td>
+  <td class="r">(5,870)</td><td class="r">0</td><td class="r">0</td>
+  <td class="neg">(21,330)</td><td class="pos">4,140</td><td class="neg">(29,530)</td><td class="neg">(33,670)</td><td class="pos">46,430</td><td class="pos">5,870</td><td class="r">0</td>
+  <td class="r">244.33%</td><td class="neg">-18.18%</td><td class="r">129.60%</td><td class="r">180.73%</td><td class="neg">-88.78%</td><td class="neg">-100.00%</td><td class="grey">NM</td>
+</tr>
+<tr class="spacer"><td colspan="23"></td></tr>
+
+<tr class="grand-total">
+  <td>Net change in current fund balance</td>
+  <td class="r">32,110</td><td class="r">54,073</td>
+  <td class="r">25,175</td><td class="r">(540)</td><td class="r">4,915</td>
+  <td class="r">40,070</td><td class="r">385,230</td><td class="r">401,060</td>
+  <td class="pos">21,963</td><td class="neg">(25,715)</td><td class="neg">(20,260)</td><td class="pos">5,455</td><td class="pos">35,155</td><td class="pos">345,160</td><td class="pos">15,830</td>
+  <td class="r">68.40%</td><td class="grey">NM</td><td class="neg">-80.48%</td><td class="grey">NM</td><td class="grey">NM</td><td class="grey">1,000%+</td><td class="r">4.11%</td>
+</tr>
+<tr class="spacer"><td colspan="23"></td></tr>
+
+<tr class="section-header">
+  <td colspan="23">VI. Current Fund Balances</td>
+</tr>
+<tr class="indent1">
+  <td class="clickable" data-key="line_beginning_balance">A. Beginning balance</td>
+  <td class="blue">318,420</td><td class="blue">350,530</td>
+  <td class="r">318,420</td><td class="r">334,710</td><td class="r">350,530</td>
+  <td class="r">355,445</td><td class="r">395,515</td><td class="r">780,745</td>
+  <td class="pos">32,110</td><td class="pos">16,290</td><td class="pos">32,110</td><td class="pos">15,820</td><td class="pos">4,915</td><td class="pos">40,070</td><td class="pos">385,230</td>
+  <td class="r">10.08%</td><td class="r">5.12%</td><td class="r">10.08%</td><td class="r">4.73%</td><td class="r">1.47%</td><td class="r">10.28%</td><td class="r">97.39%</td>
+</tr>
+<tr class="indent1">
+  <td>B. Ending balance</td>
+  <td class="blue">350,530</td><td class="blue">404,603</td>
+  <td class="r">343,595</td><td class="r">334,170</td><td class="r">355,445</td>
+  <td class="r">395,515</td><td class="r">780,745</td><td class="r">1,181,805</td>
+  <td class="pos">54,073</td><td class="neg">(9,425)</td><td class="pos">11,850</td><td class="pos">21,275</td><td class="pos">40,070</td><td class="pos">385,230</td><td class="pos">401,060</td>
+  <td class="r">15.43%</td><td class="neg">-2.74%</td><td class="r">3.45%</td><td class="r">6.37%</td><td class="r">11.28%</td><td class="r">97.39%</td><td class="r">51.38%</td>
+</tr>
+
+    </tbody>
+  </table>
+  </div>
+  <div class="footnotes">
+    * If the current month is open, the actuals will reflect transactions that have a valid budget check but may not be approved and posted.<br>
+    * Prior to FY 12 close, the Beginning Fund Balance and Ending Fund Balance on this report do not reflect their actual amounts.
+  </div>
+</div>
+
+<div id="explain-panel">
+  <div class="panel-header">
+    <span>📘 Column Guide</span>
+    <button onclick="closePanel()">✕</button>
+  </div>
+  <div id="explain-inner">
+    <div id="explain-content">
+      <p style="color:#555;font-size:11px;line-height:1.55;">
+        Click any <strong style="color:#003087;">highlighted column header or budget report line</strong> to learn what it means, how to interpret it, and why it matters.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="training-badge">🎓 Training Mode</div>
+
+<script>
+const EXPLANATIONS = {
+  line_tuition_fees: {
+    label: "I.A.1.a. Tuition / I.A.1.b. Fees",
+    what: "Tuition is the gross cumulative revenue generated from student charges for academic credit-bearing instruction. Fees are revenue from mandatory student assessments such as technology, laboratory, health service, and student activity charges.",
+    interpret: "Tuition represents the sticker-price instructional revenue before institutional discounting. Fees are non-instructional charges that support specific departmental or student-life operations.",
+    why: "Together they show the institution's core enrollment-driven revenue base and help distinguish academic pricing strength from cost-recovery charges tied to operations.",
+    related: "Best read with Less financial aid grants and Net Tuition & Fees. In this report, tuition and fees are combined into a single line item."
+  },
+  line_financial_aid: {
+    label: "I.A.2. Less financial aid grants",
+    what: "A contra-revenue account representing institutional scholarship allowances and tuition discounts.",
+    interpret: "This figure is subtracted from gross tuition and fee revenue to arrive at net tuition revenue.",
+    why: "It indicates the institutional discount rate and shows how much gross student revenue is being redirected to support access and affordability.",
+    related: "Best compared with Tuition and fees and Net Tuition & Fees."
+  },
+  line_gov_direct: {
+    label: "I.B.1. Gov't grants and contracts - direct",
+    what: "Federal, state, or local agency funding restricted for the direct execution of sponsored programs.",
+    interpret: "Reflects the direct program activity funded by government sponsors, including research salaries, equipment, and materials.",
+    why: "Measures the scale of the institution's sponsored research enterprise and the degree of external support tied to mission activity.",
+    related: "Use with Gov't grants and contracts - indirect to distinguish direct sponsored activity from overhead recovery."
+  },
+  line_gov_indirect: {
+    label: "I.B.2. Gov't grants and contracts - indirect",
+    what: "Revenue earned through Facilities and Administrative cost recovery at negotiated federal rates.",
+    interpret: "This is overhead recovery earned to support the infrastructure required to conduct sponsored research.",
+    why: "Provides critical unrestricted support for the institutional backbone behind research operations, including compliance, space, and administration.",
+    related: "Best read with Gov't grants and contracts - direct and overall research-related expense lines."
+  },
+  line_private_gifts: {
+    label: "I.C.1. Private Gifts",
+    what: "Unrestricted philanthropic contributions available for immediate use within the current operating budget.",
+    interpret: "These are non-endowed donations from alumni, friends, foundations, or corporations that can support current-year priorities.",
+    why: "Measures annual giving strength and provides flexible bridge funding for strategic or emerging institutional needs.",
+    related: "Use with private grants and contracts lines to separate pure philanthropy from restricted sponsored-like support."
+  },
+  line_common_cost: {
+    label: "II.A.1. Common Cost (Allocated)",
+    what: "The systematic distribution of shared central administrative expenses to specific revenue-generating or operating units.",
+    interpret: "Represents a unit's share of university-wide infrastructure such as HR, central IT, finance, security, and other central services.",
+    why: "Ensures units absorb their portion of the common platform required to keep the institution functioning.",
+    related: "This explanation is stored for use if a Common Cost line is added to the table later."
+  },
+  line_instruction_support: {
+    label: "III.A.1.a. Instruction and faculty support",
+    what: "Direct functional expenses for academic department operations, including faculty salaries and classroom materials.",
+    interpret: "This is the core expenditure line tied to the teaching mission and faculty support structure.",
+    why: "Reflects the institution's investment in academic quality, instructional delivery, and faculty retention.",
+    related: "Best read with student services, other educational administration costs, and net tuition revenue."
+  },
+  line_plant_ops: {
+    label: "III.C. Operation and maintenance of plant",
+    what: "Expenses for the stewardship of physical assets, including utilities, custodial services, and routine repairs.",
+    interpret: "These are the costs required to keep buildings safe, clean, functional, and climate-controlled.",
+    why: "Tracking this line helps identify deferred maintenance pressure and the budget impact of rising utility or labor costs.",
+    related: "Often reviewed alongside major equipment, capital transfers, and debt-related obligations."
+  },
+  line_debt_service: {
+    label: "III.F. Debt Service",
+    what: "Scheduled payments for the retirement of principal and interest on bonds and other long-term institutional debt.",
+    interpret: "This is the university's fixed financing obligation for prior capital borrowing, similar to a large institutional mortgage payment.",
+    why: "High debt service can reduce future borrowing capacity and limit operating flexibility.",
+    related: "Best read with capital projects, plant operations, and overall change in current funds from operating activities."
+  },
+  line_release_restriction: {
+    label: "V.D. Release From Restriction",
+    what: "The reclassification of net assets from restricted to unrestricted once donor-imposed conditions are satisfied.",
+    interpret: "This occurs when previously restricted resources are recognized into operations because the underlying purpose or timing requirement has been met.",
+    why: "It matches restricted support to the actual expenditures and helps ensure compliance with donor intent.",
+    related: "This explanation is stored for use if a Release From Restriction line is added to the table later."
+  },
+  line_beginning_balance: {
+    label: "VI.A. Beginning Balance",
+    what: "The cumulative net assets or fund balance carried forward from the prior fiscal year.",
+    interpret: "This is the starting resource position at the opening of the fiscal year, before current-year operating activity changes it.",
+    why: "It establishes the baseline available resources for the year and frames how much flexibility the institution begins with.",
+    related: "Best read with Net change in current fund balance and Ending balance."
+  },
+  mar_fy25_ytd: {
+    label: "March FY25 YTD Actual",
+    what: "The cumulative actual amount recorded through March of Fiscal Year 2025.",
+    interpret: "This shows where the category stood at this same point in the prior fiscal year. It is a year-to-date benchmark, not a full-year total.",
+    why: "It gives you a like-for-like comparison point when evaluating how the current year is tracking against last year through the same month.",
+    related: "Best compared with March FY26 YTD Actual, FY25 Actual, and FY26 YTD vs FY25 YTD $ Variance."
+  },
+  mar_fy26_ytd: {
+    label: "March FY26 YTD Actual",
+    what: "The cumulative actual amount recorded through March of Fiscal Year 2026.",
+    interpret: "This is the current year-to-date actual through the report month. It shows how much has actually occurred so far this fiscal year.",
+    why: "This is one of the core operating fields in the report because it shows current performance to date before full-year projections are considered.",
+    related: "Use with March FY25 YTD Actual, FY26 Current Estimate, and the FY26 YTD variance columns."
+  },
+  fy25_actual: {
+    label: "FY25 Actual",
+    what: "The final full-year actual amount recorded for Fiscal Year 2025.",
+    interpret: "This is last year's completed result. Unlike the March FY25 YTD Actual column, this reflects the full closed-year amount.",
+    why: "It provides historical context and serves as the baseline for full-year year-over-year comparisons.",
+    related: "Best used with FY26 Original, FY26 Current Estimate, and FY26 Cur Est vs FY25 Actual $ Variance."
+  },
+  fy26_orig: {
+    label: "FY26 Original",
+    what: "The original budgeted amount for Fiscal Year 2026.",
+    interpret: "This is the starting financial plan for FY26 before forecast revisions or updated estimates were made.",
+    why: "It shows what was initially expected and gives you the baseline for measuring whether the year is trending above or below plan.",
+    related: "Use with FY26 Current Estimate, March FY26 YTD Actual, and FY26 Cur Est vs FY26 Orig Bud $ Variance."
+  },
+  fy26_ce: {
+    label: "FY26 Current Estimate",
+    what: "The latest forecasted amount for Fiscal Year 2026 based on current expectations.",
+    interpret: "This is the revised outlook for the year. It reflects updated assumptions, actual performance so far, and any known changes to spending or revenue.",
+    why: "This is often the most decision-useful FY26 number because it reflects where the year is now expected to land, not just where it started.",
+    related: "Compare with FY26 Original, March FY26 YTD Actual, FY25 Actual, and all FY26 variance columns."
+  },
+  fy27_fc: {
+    label: "FY27 Forecast",
+    what: "The projected amount for Fiscal Year 2027.",
+    interpret: "This is next year's forecasted expectation based on current planning assumptions.",
+    why: "It gives leadership visibility into the next fiscal year and supports multi-year planning.",
+    related: "Use with FY26 Current Estimate and FY27 Forecast vs FY26 Cur Est $ Variance."
+  },
+  fy28_fc: {
+    label: "FY28 Forecast",
+    what: "The projected amount for Fiscal Year 2028.",
+    interpret: "This is the longer-range forecast for FY28 based on current assumptions and planning models.",
+    why: "It helps show whether the category is expected to grow, decline, or remain stable beyond the immediate next year.",
+    related: "Use with FY27 Forecast, FY29 Forecast, and FY28 Forecast vs FY27 Forecast $ Variance."
+  },
+  fy29_fc: {
+    label: "FY29 Forecast",
+    what: "The projected amount for Fiscal Year 2029.",
+    interpret: "This is the outer-year forecast in the multi-year outlook shown in the report.",
+    why: "It helps leadership assess long-term trajectory, sustainability, and whether current patterns create future pressure or opportunity.",
+    related: "Use with FY28 Forecast and FY29 Forecast vs FY28 Forecast $ Variance."
+  },
+  var_ytd_dol: {
+    label: "FY26 YTD vs FY25 YTD $ Variance",
+    what: "The dollar difference between March FY26 YTD Actual and March FY25 YTD Actual.",
+    interpret: "This tells you how much higher or lower the current year-to-date actual is compared with the same point last year.",
+    why: "It is one of the best indicators of current-year movement because it compares the same point in time across years.",
+    related: "Calculated from March FY26 YTD Actual minus March FY25 YTD Actual. Use alongside FY26 YTD vs FY25 YTD % Change."
+  },
+  var_orig_fy25_dol: {
+    label: "FY26 Orig Bud vs FY25 Actual $ Variance",
+    what: "The dollar difference between the FY26 Original budget and the FY25 Actual full-year result.",
+    interpret: "This shows how much growth or reduction was built into the FY26 original plan compared with where FY25 actually ended.",
+    why: "It helps reveal whether the new year's budget was set aggressively, conservatively, or roughly in line with the prior year.",
+    related: "Calculated from FY26 Original minus FY25 Actual. Best read with FY26 Orig Bud vs FY25 Actual % Change."
+  },
+  var_ce_fy25_dol: {
+    label: "FY26 Cur Est vs FY25 Actual $ Variance",
+    what: "The dollar difference between the FY26 Current Estimate and the FY25 Actual full-year amount.",
+    interpret: "This shows how the current expected FY26 year-end result compares with last year's final result.",
+    why: "It is more useful than the original budget comparison when you want the most realistic view of current year-over-year performance.",
+    related: "Calculated from FY26 Current Estimate minus FY25 Actual. Use with FY26 Cur Est vs FY25 Actual % Change."
+  },
+  var_ce_orig_dol: {
+    label: "FY26 Cur Est vs FY26 Orig Bud $ Variance",
+    what: "The dollar difference between the FY26 Current Estimate and the FY26 Original budget.",
+    interpret: "This shows how far the year is now expected to land above or below the original plan.",
+    why: "This is a key management column because it highlights whether the current year is forecasting a favorable or unfavorable variance to budget.",
+    related: "Calculated from FY26 Current Estimate minus FY26 Original. Use with FY26 Cur Est vs FY26 Orig Bud % Change."
+  },
+  var_fy27_ce_dol: {
+    label: "FY27 Forecast vs FY26 Cur Est $ Variance",
+    what: "The dollar difference between the FY27 Forecast and the FY26 Current Estimate.",
+    interpret: "This shows the expected dollar change from the current projected FY26 year-end into FY27.",
+    why: "It helps identify whether the category is expected to grow, contract, or hold steady next year.",
+    related: "Calculated from FY27 Forecast minus FY26 Current Estimate. Use with FY27 Forecast vs FY26 Cur Est % Change."
+  },
+  var_fy28_fy27_dol: {
+    label: "FY28 Forecast vs FY27 Forecast $ Variance",
+    what: "The dollar difference between the FY28 Forecast and the FY27 Forecast.",
+    interpret: "This shows the projected year-over-year dollar change between those two future years.",
+    why: "It helps show whether the multi-year plan assumes continued growth, decline, or stabilization.",
+    related: "Calculated from FY28 Forecast minus FY27 Forecast. Use with FY28 Forecast vs FY27 Forecast % Change."
+  },
+  var_fy29_fy28_dol: {
+    label: "FY29 Forecast vs FY28 Forecast $ Variance",
+    what: "The dollar difference between the FY29 Forecast and the FY28 Forecast.",
+    interpret: "This shows the projected dollar change from FY28 into FY29.",
+    why: "It gives another view of the long-range trajectory and whether outer-year assumptions remain consistent.",
+    related: "Calculated from FY29 Forecast minus FY28 Forecast. Use with FY29 Forecast vs FY28 Forecast % Change."
+  },
+  pct_ytd: {
+    label: "FY26 YTD vs FY25 YTD % Change",
+    what: "The percentage change between March FY26 YTD Actual and March FY25 YTD Actual.",
+    interpret: "This expresses the year-to-date difference as a percentage rather than a dollar amount.",
+    why: "It helps normalize comparisons across categories of different sizes. A small dollar variance may be large in percentage terms, and vice versa.",
+    related: "Use with FY26 YTD vs FY25 YTD $ Variance and the two March YTD Actual columns."
+  },
+  pct_orig_fy25: {
+    label: "FY26 Orig Bud vs FY25 Actual % Change",
+    what: "The percentage change between the FY26 Original budget and FY25 Actual.",
+    interpret: "This shows the planned increase or decrease built into the original FY26 budget relative to last year's final result.",
+    why: "It highlights how ambitious or restrained the original FY26 budget was compared with historical performance.",
+    related: "Use with FY26 Orig Bud vs FY25 Actual $ Variance, FY26 Original, and FY25 Actual."
+  },
+  pct_ce_fy25: {
+    label: "FY26 Cur Est vs FY25 Actual % Change",
+    what: "The percentage change between FY26 Current Estimate and FY25 Actual.",
+    interpret: "This shows the expected current-year year-over-year increase or decrease as a percentage.",
+    why: "It gives a cleaner sense of scale than the dollar variance alone and is especially useful when comparing categories of different sizes.",
+    related: "Use with FY26 Cur Est vs FY25 Actual $ Variance, FY26 Current Estimate, and FY25 Actual."
+  },
+  pct_ce_orig: {
+    label: "FY26 Cur Est vs FY26 Orig Bud % Change",
+    what: "The percentage change between FY26 Current Estimate and FY26 Original budget.",
+    interpret: "This tells you how far the current forecast has moved from the original budget in percentage terms.",
+    why: "It is a quick signal of whether the year is drifting materially above or below plan.",
+    related: "Use with FY26 Cur Est vs FY26 Orig Bud $ Variance, FY26 Current Estimate, and FY26 Original."
+  },
+  pct_fy27_ce: {
+    label: "FY27 Forecast vs FY26 Cur Est % Change",
+    what: "The percentage change between the FY27 Forecast and the FY26 Current Estimate.",
+    interpret: "This shows the expected rate of change heading into next fiscal year.",
+    why: "It helps leadership gauge momentum and assess whether next year's assumptions are realistic.",
+    related: "Use with FY27 Forecast vs FY26 Cur Est $ Variance, FY27 Forecast, and FY26 Current Estimate."
+  },
+  pct_fy28_fy27: {
+    label: "FY28 Forecast vs FY27 Forecast % Change",
+    what: "The percentage change between the FY28 Forecast and FY27 Forecast.",
+    interpret: "This expresses the projected year-over-year movement between those two forecast years as a percentage.",
+    why: "It helps show whether the plan assumes accelerating growth, slowing growth, or contraction over time.",
+    related: "Use with FY28 Forecast vs FY27 Forecast $ Variance, FY28 Forecast, and FY27 Forecast."
+  },
+  pct_fy29_fy28: {
+    label: "FY29 Forecast vs FY28 Forecast % Change",
+    what: "The percentage change between the FY29 Forecast and FY28 Forecast.",
+    interpret: "This shows the projected outer-year rate of change from FY28 to FY29.",
+    why: "It provides a final long-range trend indicator in the planning horizon.",
+    related: "Use with FY29 Forecast vs FY28 Forecast $ Variance, FY29 Forecast, and FY28 Forecast."
+  }
+};
+
+let activeEl = null;
+
+function openPanel(key, el) {
+  const data = EXPLANATIONS[key];
+  if (!data) return;
+
+  if (activeEl && activeEl !== el) {
+    activeEl.classList.remove('active');
+  }
+
+  activeEl = el;
+  el.classList.add('active');
+
+  document.getElementById('explain-content').innerHTML = `
+    <div class="explain-field-name">${data.label}</div>
+    <div class="explain-section"><div class="tip-badge">WHAT IT IS</div><div class="explain-section-body">${data.what}</div></div>
+    <div class="explain-section"><div class="tip-badge">HOW TO INTERPRET</div><div class="explain-section-body">${data.interpret}</div></div>
+    <div class="explain-section"><div class="tip-badge">WHY IT MATTERS</div><div class="explain-section-body">${data.why}</div></div>
+    <div class="explain-section"><div class="tip-badge">RELATED FIELDS</div><div class="explain-section-body">${data.related}</div></div>
+  `;
+
+  document.getElementById('explain-panel').classList.add('open');
+}
+
+function closePanel() {
+  document.getElementById('explain-panel').classList.remove('open');
+  if (activeEl) {
+    activeEl.classList.remove('active');
+    activeEl = null;
+  }
+}
+
+document.querySelectorAll('.clickable').forEach(el => {
+  el.addEventListener('click', function (e) {
+    e.stopPropagation();
+    const panel = document.getElementById('explain-panel');
+
+    if (activeEl === this && panel.classList.contains('open')) {
+      closePanel();
+      return;
+    }
+
+    openPanel(this.getAttribute('data-key'), this);
+  });
+});
+</script>
+</body>
+</html>
